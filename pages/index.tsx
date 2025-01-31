@@ -21,7 +21,6 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [showWebsite, setShowWebsite] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
 
   // Ensure hydration is complete before rendering
   useEffect(() => {
@@ -39,7 +38,7 @@ export default function Home() {
   const handleSurpriseReveal = () => {
     try {
       setIsQuizOpen(false);
-      setIsExiting(true);
+      handleTransition();
     } catch (error) {
       console.error('Error in handleSurpriseReveal:', error);
     }
@@ -52,6 +51,13 @@ export default function Home() {
     }, 0);
   };
 
+  const handleTransition = () => {
+    // Use the isExiting state for transition effects
+    setTimeout(() => {
+      // Handle transition completion
+    }, 500);
+  };
+
   // Don't render anything until client-side hydration is complete
   if (!mounted) return null;
 
@@ -60,7 +66,7 @@ export default function Home() {
   }
 
   return (
-    <AnimatePresence mode="wait" onExitComplete={() => setIsExiting(false)}>
+    <AnimatePresence mode="wait">
       <motion.div
         key="content"
         initial={{ opacity: 0 }}

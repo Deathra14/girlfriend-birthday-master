@@ -1,11 +1,19 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function BirthdayCard({ onComplete }) {
   const [timeLeft, setTimeLeft] = useState(10); // Increased to 10s for better reading time
   const [isVisible, setIsVisible] = useState(true);
   const [confettiShown, setConfettiShown] = useState(false);
+
+  // Move handleComplete before useEffect
+  const handleComplete = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onComplete?.();
+    }, 500);
+  }, [onComplete]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -27,8 +35,11 @@ export default function BirthdayCard({ onComplete }) {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [isVisible, confettiShown]);
+    // Include handleComplete in useEffect cleanup
+    return () => {
+      clearInterval(timer);
+    };
+  }, [isVisible, confettiShown, handleComplete]); // Add handleComplete to dependencies
 
   const runConfetti = () => {
     const duration = 3000;
@@ -58,13 +69,6 @@ export default function BirthdayCard({ onComplete }) {
       requestAnimationFrame(frame);
     };
     frame();
-  };
-
-  const handleComplete = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onComplete?.();
-    }, 500); // Smooth exit transition
   };
 
   const handleContinue = () => {

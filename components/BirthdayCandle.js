@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react'; // Remove useEffect since it's not being used
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaStar, FaFeather } from 'react-icons/fa';
 import BirthdayCard from './BirthdayCard';
@@ -7,22 +7,18 @@ export default function BirthdayCandle({ onComplete }) {
   const [blownCandles, setBlownCandles] = useState(new Array(3).fill(false));
   const [allBlown, setAllBlown] = useState(false);
   const [showCard, setShowCard] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-
+  // Remove isExiting state since it's not being used effectively
+  
   const handleBlow = (index) => {
-    if (isExiting) return;
-    
     const newBlownCandles = [...blownCandles];
     newBlownCandles[index] = true;
     setBlownCandles(newBlownCandles);
 
     if (newBlownCandles.every(candle => candle)) {
       setAllBlown(true);
-      // Add delay before showing card
       setTimeout(() => {
-        setIsExiting(true);
         setTimeout(() => setShowCard(true), 1000);
-      }, 2000); // Give time to see all candles blown
+      }, 2000);
     }
   };
 

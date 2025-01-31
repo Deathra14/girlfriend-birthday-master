@@ -1,32 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 
 export default function Scrapbook({ birthDate, name }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Auto-slide effect
-  useEffect(() => {
-    if (isPaused) return;
-    
-    const timer = setInterval(() => {
-      setCurrentPage((prev) => 
-        prev === pages.length - 1 ? 0 : prev + 1
-      );
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(timer);
-  }, [isPaused]);
-
-  const handlePageChange = (index) => {
-    setCurrentPage(index);
-    setIsPaused(true);
-    // Resume auto-slide after 10 seconds of inactivity
-    setTimeout(() => setIsPaused(false), 10000);
-  };
-
-  const pages = [
+  // Pages array memoized to prevent recreation
+  const pages = useMemo(() => [
     {
       title: "The Beginning",
       date: birthDate,
@@ -46,7 +27,27 @@ export default function Scrapbook({ birthDate, name }) {
       imageUrl: "/images/photo3.jpg",
       decoration: "stars"
     }
-  ];
+  ], [birthDate]);
+
+  // Auto-slide effect
+  useEffect(() => {
+    if (isPaused) return;
+    
+    const timer = setInterval(() => {
+      setCurrentPage((prev) => 
+        prev === pages.length - 1 ? 0 : prev + 1
+      );
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(timer);
+  }, [isPaused, pages.length]);
+
+  const handlePageChange = (index) => {
+    setCurrentPage(index);
+    setIsPaused(true);
+    // Resume auto-slide after 10 seconds of inactivity
+    setTimeout(() => setIsPaused(false), 10000);
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8"> {/* Reduced max width */}

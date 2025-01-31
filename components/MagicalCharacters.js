@@ -1,25 +1,37 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 export default function MagicalCharacters() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
-      {/* Golden Snitch with more natural flying pattern */}
+      {/* Interactive Snitch */}
       <motion.img
         src="/images/snitch.png"
-        className="absolute w-8 h-8"
-        initial={{ x: -100, y: 0 }}
+        className="absolute w-8 h-8 filter drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
         animate={{
-          x: [0, 200, 400, 200, 0],
-          y: [0, -100, 0, 100, 0],
-          rotate: [0, 45, 0, -45, 0]
+          x: mousePosition.x + Math.sin(Date.now() * 0.01) * 50,
+          y: mousePosition.y + Math.cos(Date.now() * 0.01) * 50,
+          rotate: [0, 360],
+          scale: [1, 1.1, 1]
         }}
         transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut",
-          times: [0, 0.25, 0.5, 0.75, 1]
+          type: "spring",
+          stiffness: 50,
+          damping: 10,
+          rotate: { duration: 2, repeat: Infinity },
+          scale: { duration: 1, repeat: Infinity }
         }}
-        style={{ filter: "drop-shadow(0 0 10px rgba(255, 215, 0, 0.3))" }}
       />
 
       {/* Owl with smoother gliding motion */}
@@ -68,28 +80,30 @@ export default function MagicalCharacters() {
         />
       ))}
 
-      {/* Add sparkle effects */}
-      {[...Array(5)].map((_, index) => (
+      {/* Magical Sparkles */}
+      {[...Array(10)].map((_, i) => (
         <motion.div
-          key={`sparkle-${index}`}
-          className="absolute w-2 h-2 bg-yellow-200 rounded-full"
-          initial={{
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            scale: 0
-          }}
+          key={i}
+          className="absolute"
+          initial={{ opacity: 0, scale: 0 }}
           animate={{
-            scale: [0, 1, 0],
-            opacity: [0, 1, 0]
+            opacity: [0, 1, 0],
+            scale: [0.5, 1.5, 0.5],
+            x: [0, Math.random() * 200 - 100],
+            y: [0, Math.random() * 200 - 100]
           }}
           transition={{
-            duration: 2,
+            duration: 2 + Math.random(),
             repeat: Infinity,
-            delay: index * 0.8,
-            ease: "easeInOut"
+            delay: i * 0.2
           }}
           style={{
-            boxShadow: "0 0 10px rgba(255, 215, 0, 0.5)"
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            background: `radial-gradient(circle, #FFD700 0%, transparent 70%)`,
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%'
           }}
         />
       ))}

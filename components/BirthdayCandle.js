@@ -1,14 +1,25 @@
-import { useState } from 'react'; // Remove useEffect since it's not being used
+import { useState, useEffect } from 'react'; // Remove useEffect since it's not being used
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaStar, FaFeather } from 'react-icons/fa';
 import BirthdayCard from './BirthdayCard';
+import AudioManager from './AudioManager';
 
 export default function BirthdayCandle({ onComplete }) {
   const [blownCandles, setBlownCandles] = useState(new Array(3).fill(false));
   const [allBlown, setAllBlown] = useState(false);
   const [showCard, setShowCard] = useState(false);
-  // Remove isExiting state since it's not being used effectively
-  
+  const [isAudioReady, setIsAudioReady] = useState(false);
+
+  // Initialize audio as soon as component mounts
+  useEffect(() => {
+    // Small delay to ensure smooth mounting
+    const timer = setTimeout(() => {
+      setIsAudioReady(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleBlow = (index) => {
     const newBlownCandles = [...blownCandles];
     newBlownCandles[index] = true;
@@ -120,6 +131,14 @@ export default function BirthdayCandle({ onComplete }) {
           className="fixed inset-0 bg-gradient-to-b from-[#0A1E3F] to-[#1A1147] 
                     flex items-center justify-center z-50 p-4 sm:p-0"
         >
+          {/* Audio manager with proper mounting */}
+          {isAudioReady && (
+            <AudioManager 
+              audioUrl="/audio/happybirthday.mp3" 
+              autoPlay={true}
+              volume={0.4}
+            />
+          )}
           <motion.div className="w-full max-w-lg mx-auto">
             {/* Enhanced Ravenclaw Banner */}
             <motion.div

@@ -128,52 +128,75 @@ export default function Scrapbook({ birthDate, name }) {
               </motion.p>
             </div>
 
-            {/* Navigation Controls */}
-            <div className="flex justify-between items-center mt-6">
+            {/* Navigation Controls - Enhanced Version */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
               <motion.button
-                whileHover={{ scale: 1.05, x: -5 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
                 disabled={currentPage === 0}
-                className="px-6 py-3 bg-[#b7b7b7]/10 text-[#b7b7b7] rounded-lg 
-                         hover:bg-[#b7b7b7]/20 disabled:opacity-50 disabled:cursor-not-allowed
-                         transition-all duration-300 text-lg"
+                className={`w-full sm:w-auto px-6 py-3 rounded-lg transition-all duration-300
+                         flex items-center justify-center gap-2 group
+                         ${currentPage === 0 
+                           ? 'opacity-50 cursor-not-allowed bg-[#b7b7b7]/5' 
+                           : 'bg-[#b7b7b7]/10 hover:bg-[#b7b7b7]/20'}`}
               >
-                ← Previous Memory
+                <motion.span
+                  animate={{ x: currentPage === 0 ? 0 : [-5, 0, -5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="text-[#b7b7b7]"
+                >
+                  ←
+                </motion.span>
+                <span className="text-[#b7b7b7] font-magical">Previous Memory</span>
               </motion.button>
+
+              {/* Mobile-friendly page indicator */}
+              <div className="order-first sm:order-none w-full sm:w-auto flex justify-center items-center gap-2">
+                {pages.map((_, index) => (
+                  <motion.button
+                    key={index}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handlePageChange(index)}
+                    className={`relative h-2 transition-all duration-300
+                              ${currentPage === index ? 'w-6' : 'w-2'}`}
+                  >
+                    <span className={`absolute inset-0 rounded-full
+                                  ${currentPage === index 
+                                    ? 'bg-gradient-to-r from-[#b7b7b7] to-[#d4d4d4]' 
+                                    : 'bg-[#b7b7b7]/30'}`} 
+                    />
+                  </motion.button>
+                ))}
+              </div>
+
               <motion.button
-                whileHover={{ scale: 1.05, x: 5 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handlePageChange(Math.min(pages.length - 1, currentPage + 1))}
                 disabled={currentPage === pages.length - 1}
-                className="px-6 py-3 bg-[#b7b7b7]/10 text-[#b7b7b7] rounded-lg 
-                         hover:bg-[#b7b7b7]/20 disabled:opacity-50 disabled:cursor-not-allowed
-                         transition-all duration-300 text-lg"
+                className={`w-full sm:w-auto px-6 py-3 rounded-lg transition-all duration-300
+                         flex items-center justify-center gap-2 group
+                         ${currentPage === pages.length - 1 
+                           ? 'opacity-50 cursor-not-allowed bg-[#b7b7b7]/5' 
+                           : 'bg-[#b7b7b7]/10 hover:bg-[#b7b7b7]/20'}`}
               >
-                Next Memory →
+                <span className="text-[#b7b7b7] font-magical">Next Memory</span>
+                <motion.span
+                  animate={{ x: currentPage === pages.length - 1 ? 0 : [5, 0, 5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="text-[#b7b7b7]"
+                >
+                  →
+                </motion.span>
               </motion.button>
             </div>
 
-            {/* Page Indicators */}
-            <div className="flex justify-center gap-2 mt-6">
-              {pages.map((_, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handlePageChange(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300
-                            ${currentPage === index 
-                              ? 'bg-[#b7b7b7] w-4' 
-                              : 'bg-[#b7b7b7]/30'}`}
-                />
-              ))}
-            </div>
-
-            {/* Progress Bar */}
+            {/* Progress Bar - Enhanced */}
             {!isPaused && (
               <motion.div 
-                className="absolute bottom-0 left-0 h-0.5 bg-[#b7b7b7]"
+                className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#b7b7b7]/30 via-[#b7b7b7] to-[#b7b7b7]/30"
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 5, ease: "linear" }}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
@@ -13,6 +13,7 @@ export default function CountdownTimer() {
     seconds: 0,
     isBirthday: false
   });
+  const [hasRunConfetti, setHasRunConfetti] = useState(false);
 
   // Update birthDate in useMemo
   const dates = useMemo(() => {
@@ -23,36 +24,39 @@ export default function CountdownTimer() {
     return { birthDate, currentYearBirthday };
   }, []);
 
-  // Add confetti effect function
-  const runBirthdayConfetti = () => {
-    const duration = 15 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+  // Update confetti effect function to run only once
+  const runBirthdayConfetti = useCallback(() => {
+    if (hasRunConfetti) return;
+    
+    const duration = 3 * 1000; // 3 seconds duration
+    const end = Date.now() + duration;
+    const colors = ['#4B6CB7', '#CD7F32', '#FFD700'];
 
-    const randomInRange = (min, max) => Math.random() * (max - min) + min;
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: colors
+      });
 
-    const interval = setInterval(() => {
-      const timeLeft = animationEnd - Date.now();
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: colors
+      });
 
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
       }
+    };
 
-      const particleCount = 50 * (timeLeft / duration);
-      
-      // Burst confetti from both sides
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-      });
-    }, 250);
-  };
+    frame();
+    setHasRunConfetti(true);
+  }, [hasRunConfetti]);
 
   useEffect(() => {
     const calculateTimeElapsed = () => {
@@ -84,8 +88,8 @@ export default function CountdownTimer() {
         age--;
       }
 
-      // Run confetti if it's birthday
-      if (isBirthday) {
+      // Run confetti only if it's birthday and hasn't run yet
+      if (isBirthday && !hasRunConfetti) {
         runBirthdayConfetti();
       }
 
@@ -103,7 +107,7 @@ export default function CountdownTimer() {
     const timer = setInterval(calculateTimeElapsed, 1000);
 
     return () => clearInterval(timer);
-  }, [dates]);
+  }, [dates, hasRunConfetti, runBirthdayConfetti]);
 
   const formatMessage = (days, isBirthday) => {
     if (isBirthday) {

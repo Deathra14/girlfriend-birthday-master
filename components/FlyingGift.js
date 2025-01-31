@@ -39,20 +39,93 @@ export default function FlyingGift() {
 
   return (
     <>
-      {/* Notification */}
+      {/* Enhanced Mobile-Friendly Notification */}
       <AnimatePresence>
         {showNotification && !isGiftCaught && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 
-                     bg-[#192341] px-6 py-3 rounded-full border border-pink-400/30
-                     shadow-lg backdrop-blur-sm"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="fixed left-4 right-4 md:left-auto md:right-4 top-24 md:top-20 
+                     md:w-auto z-[60] mx-auto md:mx-0
+                     max-w-[320px] md:min-w-[280px]"
           >
-            <p className="text-pink-400 font-magical text-sm whitespace-nowrap">
-              🎁 Catch your magical birthday gift! ✨
-            </p>
+            <motion.div
+              className="bg-gradient-to-r from-[#192341] to-[#1a1147]
+                       border border-pink-400/30 rounded-2xl
+                       shadow-lg backdrop-blur-md
+                       p-4 relative overflow-hidden"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              {/* Sparkle Effects */}
+              <div className="absolute inset-0">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-pink-400/50 rounded-full"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.3,
+                    }}
+                    style={{
+                      left: `${20 + i * 30}%`,
+                      top: `${20 + i * 20}%`,
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Content */}
+              <div className="flex items-center justify-center gap-3">
+                <motion.div
+                  animate={{ 
+                    rotate: [0, -10, 10, 0],
+                    scale: [1, 1.1, 1.1, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
+                  className="relative"
+                >
+                  <span className="text-2xl filter drop-shadow-[0_0_8px_rgba(255,192,203,0.5)]">
+                    🎁
+                  </span>
+                  <motion.div
+                    animate={{ scale: [1, 1.5, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="absolute -inset-2 bg-pink-400/20 rounded-full blur-xl"
+                  />
+                </motion.div>
+                
+                <div className="flex-1">
+                  <p className="text-pink-400 font-magical text-base md:text-lg
+                             leading-snug tracking-wide text-center md:text-left">
+                    Catch your magical birthday gift! 
+                    <span className="inline-block ml-1 animate-bounce">✨</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Decorative bottom border */}
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-[2px]"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, #FDA4AF, transparent)'
+                }}
+                animate={{
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

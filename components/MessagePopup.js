@@ -49,8 +49,22 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
 
   const variants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, y: -20, scale: 0.95 }
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 300
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20, 
+      scale: 0.95,
+      transition: { duration: 0.2 }
+    }
   };
 
   return (
@@ -77,95 +91,98 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
             animate="visible"
             exit="exit"
             variants={variants}
-            className="relative w-[90%] max-w-lg max-h-[85vh] overflow-auto bg-[#192341] 
+            className="relative w-[90%] max-w-lg max-h-[85vh] overflow-hidden bg-[#192341] 
                       rounded-xl shadow-2xl border border-[#ffd700]/20"
             style={{
               boxShadow: '0 0 50px rgba(255,215,0,0.1)',
             }}
           >
-            {/* Progress bar */}
-            <div className="sticky top-0 h-1 bg-[#ffd700]/20">
-              <motion.div
-                initial={{ width: '0%' }}
-                animate={{ width: `${((currentMessage + 1) / messages.length) * 100}%` }}
-                className="h-full bg-[#ffd700]"
-                style={{
-                  backgroundImage: 'linear-gradient(45deg, rgba(255,215,0,0.5) 25%, transparent 25%, transparent 50%, rgba(255,215,0,0.5) 50%, rgba(255,215,0,0.5) 75%, transparent 75%, transparent)',
-                  backgroundSize: '20px 20px',
-                  animation: 'progress-animation 1s linear infinite'
-                }}
-              />
-            </div>
-
-            {/* Content */}
-            <div className="p-6 sm:p-8">
-              {/* Close button */}
-              <motion.button
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={handleClose}
-                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center 
-                         bg-[#0A1E3F] rounded-full border border-[#ffd700]/30
-                         text-[#e4d5b7] hover:text-[#ffd700] transition-all"
-              >
-                <FaTimes size={14} />
-              </motion.button>
-
-              {/* Message */}
-              <div className="mt-4 min-h-[200px] flex items-center justify-center">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentMessage}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    variants={variants}
-                    className="text-center"
-                  >
-                    <p className="font-magical text-xl sm:text-2xl text-[#e4d5b7] leading-relaxed">
-                      {messages[currentMessage]}
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
+            {/* Add smooth scroll behavior */}
+            <div className="overflow-y-auto scroll-smooth">
+              {/* Progress bar */}
+              <div className="sticky top-0 h-1 bg-[#ffd700]/20">
+                <motion.div
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${((currentMessage + 1) / messages.length) * 100}%` }}
+                  className="h-full bg-[#ffd700]"
+                  style={{
+                    backgroundImage: 'linear-gradient(45deg, rgba(255,215,0,0.5) 25%, transparent 25%, transparent 50%, rgba(255,215,0,0.5) 50%, rgba(255,215,0,0.5) 75%, transparent 75%, transparent)',
+                    backgroundSize: '20px 20px',
+                    animation: 'progress-animation 1s linear infinite'
+                  }}
+                />
               </div>
 
-              {/* Navigation */}
-              <div className="mt-8 space-y-4">
-                <div className="flex justify-center gap-2">
-                  {messages.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentMessage(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 
-                                ${index === currentMessage ? 'bg-[#ffd700] w-4' : 'bg-[#2A4B8C]/50'}`}
-                    />
-                  ))}
+              {/* Content */}
+              <div className="p-6 sm:p-8">
+                {/* Close button */}
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleClose}
+                  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center 
+                          bg-[#0A1E3F] rounded-full border border-[#ffd700]/30
+                          text-[#e4d5b7] hover:text-[#ffd700] transition-all"
+                >
+                  <FaTimes size={14} />
+                </motion.button>
+
+                {/* Message */}
+                <div className="mt-4 min-h-[200px] flex items-center justify-center">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentMessage}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={variants}
+                      className="text-center"
+                    >
+                      <p className="font-magical text-xl sm:text-2xl text-[#e4d5b7] leading-relaxed">
+                        {messages[currentMessage]}
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
 
-                <div className="flex justify-between">
-                  <motion.button
-                    whileHover={{ x: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setCurrentMessage(Math.max(0, currentMessage - 1))}
-                    className={`px-4 py-2 rounded-lg text-sm ${
-                      currentMessage === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2A4B8C]/20'
-                    }`}
-                    disabled={currentMessage === 0}
-                  >
-                    Previous
-                  </motion.button>
+                {/* Navigation */}
+                <div className="mt-8 space-y-4">
+                  <div className="flex justify-center gap-2">
+                    {messages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentMessage(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 
+                                  ${index === currentMessage ? 'bg-[#ffd700] w-4' : 'bg-[#2A4B8C]/50'}`}
+                      />
+                    ))}
+                  </div>
 
-                  <motion.button
-                    whileHover={{ x: 2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setCurrentMessage(Math.min(messages.length - 1, currentMessage + 1))}
-                    className={`px-4 py-2 rounded-lg text-sm ${
-                      currentMessage === messages.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2A4B8C]/20'
-                    }`}
-                    disabled={currentMessage === messages.length - 1}
-                  >
-                    Next
-                  </motion.button>
+                  <div className="flex justify-between">
+                    <motion.button
+                      whileHover={{ x: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setCurrentMessage(Math.max(0, currentMessage - 1))}
+                      className={`px-4 py-2 rounded-lg text-sm ${
+                        currentMessage === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2A4B8C]/20'
+                      }`}
+                      disabled={currentMessage === 0}
+                    >
+                      Previous
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ x: 2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setCurrentMessage(Math.min(messages.length - 1, currentMessage + 1))}
+                      className={`px-4 py-2 rounded-lg text-sm ${
+                        currentMessage === messages.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2A4B8C]/20'
+                      }`}
+                      disabled={currentMessage === messages.length - 1}
+                    >
+                      Next
+                    </motion.button>
+                  </div>
                 </div>
               </div>
             </div>

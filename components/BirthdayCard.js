@@ -2,81 +2,85 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useState, useEffect } from 'react';
 
-export default function BirthdayCard({ isVisible, onComplete }) {
-  const [timeLeft, setTimeLeft] = useState(8); // 8 seconds to read
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+export default function BirthdayCard({ onComplete }) {
+  const [timeLeft, setTimeLeft] = useState(10); // Increased to 10s for better reading time
+  const [isVisible, setIsVisible] = useState(true);
+  const [confettiShown, setConfettiShown] = useState(false);
 
   useEffect(() => {
-    if (isVisible) {
-      const duration = 3000;
-      const animationEnd = Date.now() + duration;
-      const colors = ['#4B6CB7', '#CD7F32', '#FFD700'];
+    if (!isVisible) return;
 
-      const frame = () => {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return;
-
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.7 },
-          colors: colors
-        });
-
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.7 },
-          colors: colors
-        });
-
-        requestAnimationFrame(frame);
-      };
-
-      frame();
-
-      // Countdown timer
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1 && hasInteracted) {
-            clearInterval(timer);
-            onComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
+    // Show confetti only once
+    if (!confettiShown) {
+      runConfetti();
+      setConfettiShown(true);
     }
-  }, [isVisible, hasInteracted, onComplete]);
 
-  useEffect(() => {
-    // Move state update to useEffect
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-      if (onComplete) {
-        onComplete();
-      }
-    }, 1500);
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleComplete();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [onComplete]);
+    return () => clearInterval(timer);
+  }, [isVisible, confettiShown]);
+
+  const runConfetti = () => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const colors = ['#4B6CB7', '#CD7F32', '#FFD700'];
+
+    const frame = () => {
+      const timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) return;
+
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: colors
+      });
+
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: colors
+      });
+
+      requestAnimationFrame(frame);
+    };
+    frame();
+  };
+
+  const handleComplete = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onComplete?.();
+    }, 500); // Smooth exit transition
+  };
 
   const handleContinue = () => {
-    setHasInteracted(true);
+    setTimeLeft(1); // Trigger completion
   };
 
   return (
     <AnimatePresence>
       {isVisible && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999]">
-          {/* ...existing backdrop code... */}
-
-          {/* Card Container */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/50"
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -89,7 +93,7 @@ export default function BirthdayCard({ isVisible, onComplete }) {
               className="absolute top-0 left-0 h-1 bg-[#4B6CB7]"
               initial={{ width: "100%" }}
               animate={{ width: "0%" }}
-              transition={{ duration: 8, ease: "linear" }}
+              transition={{ duration: 10, ease: "linear" }} // Updated duration to 10s
             />
 
             {/* Card Content */}
@@ -128,7 +132,7 @@ export default function BirthdayCard({ isVisible, onComplete }) {
               <motion.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 2 }}
+                transition={{ delay: 1 }}
                 onClick={handleContinue}
                 className="mt-8 px-8 py-3 bg-[#2A4B8C] text-[#e4d5b7] rounded-lg
                          hover:bg-[#3A5B9C] transition-all duration-300
@@ -137,7 +141,7 @@ export default function BirthdayCard({ isVisible, onComplete }) {
                 <span className="relative z-10 flex items-center gap-2">
                   Continue to Celebration
                   <span className="text-sm opacity-70">
-                    ({timeLeft}s)
+                    {timeLeft > 0 ? `(${timeLeft}s)` : '(Redirecting...)'}
                   </span>
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-[#4B6CB7] to-[#2A4B8C]
@@ -168,7 +172,7 @@ export default function BirthdayCard({ isVisible, onComplete }) {
               </motion.div>
             ))}
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

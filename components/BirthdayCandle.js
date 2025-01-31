@@ -7,35 +7,27 @@ export default function BirthdayCandle({ onComplete }) {
   const [blownCandles, setBlownCandles] = useState(new Array(3).fill(false));
   const [allBlown, setAllBlown] = useState(false);
   const [showCard, setShowCard] = useState(false);
-
-  useEffect(() => {
-    if (allBlown) {
-      // Start exit animation
-      setIsExiting(true);
-      // Show card instead of directly completing
-      setTimeout(() => {
-        setShowCard(true);
-      }, 1500); // Reduced from 2000ms to 1500ms for better responsiveness
-    }
-  }, [allBlown, onComplete]);
+  const [isExiting, setIsExiting] = useState(false);
 
   const handleBlow = (index) => {
+    if (isExiting) return;
+    
     const newBlownCandles = [...blownCandles];
     newBlownCandles[index] = true;
     setBlownCandles(newBlownCandles);
 
     if (newBlownCandles.every(candle => candle)) {
       setAllBlown(true);
+      // Add delay before showing card
+      setTimeout(() => {
+        setIsExiting(true);
+        setTimeout(() => setShowCard(true), 1000);
+      }, 2000); // Give time to see all candles blown
     }
   };
 
   const handleCardComplete = () => {
-    // Use callback to avoid state updates during render
-    setTimeout(() => {
-      if (onComplete) {
-        onComplete();
-      }
-    }, 0);
+    onComplete?.();
   };
 
   const Candle = ({ index, isBlown }) => (
@@ -128,9 +120,9 @@ export default function BirthdayCandle({ onComplete }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
           className="fixed inset-0 bg-gradient-to-b from-[#0A1E3F] to-[#1A1147] 
                     flex items-center justify-center z-50 p-4 sm:p-0"
-          onAnimationComplete={() => setShowCard(true)}
         >
           <motion.div className="w-full max-w-lg mx-auto">
             {/* Enhanced Ravenclaw Banner */}

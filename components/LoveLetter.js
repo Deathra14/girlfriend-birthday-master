@@ -33,13 +33,13 @@ export default function LoveLetter() {
           <div className="space-y-6">
             <TypeAnimation
               sequence={[
-                'To my dearest love...',
+                'To my dearest love... Charisma Husniati',
                 1000,
                 'Every moment with you feels like magic...',
                 1000,
                 'You\'re my sunshine, my joy, my everything...', // Fixed apostrophe
                 1000,
-                'Happy Birthday, my forever person! 🥰',
+                'Happy Birthday, my favourite girl! 🥰',
                 5000,
               ]}
               wrapper="p"

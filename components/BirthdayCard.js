@@ -108,7 +108,7 @@ export default function BirthdayCard({ onComplete }) {
               className="space-y-6"
             >
               <h2 className="text-4xl sm:text-5xl font-magical text-[#CD7F32] mb-6">
-                Dear Charisma
+                Dear My Love Charisma
               </h2>
 
               <div className="space-y-4 text-[#e4d5b7]">

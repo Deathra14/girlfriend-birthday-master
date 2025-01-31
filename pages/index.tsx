@@ -45,11 +45,18 @@ export default function Home() {
     }
   };
 
+  const handleWebsiteReveal = () => {
+    // Use callback to avoid state updates during render
+    setTimeout(() => {
+      setShowWebsite(true);
+    }, 0);
+  };
+
   // Don't render anything until client-side hydration is complete
   if (!mounted) return null;
 
   if (!showWebsite) {
-    return <BirthdayCandle onComplete={() => setShowWebsite(true)} />;
+    return <BirthdayCandle onComplete={handleWebsiteReveal} />;
   }
 
   return (

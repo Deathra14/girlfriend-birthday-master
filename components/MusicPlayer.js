@@ -37,8 +37,8 @@ export default function MusicPlayer() {
             </div>
             
             <iframe 
-              src="https://open.spotify.com/embed/track/6NFyWDv5CjfwuzoCkw47Xf?utm_source=generator&theme=0"
-              width="100%" 
+              src="https://open.spotify.com/embed/playlist/2pmFsm5rvHkFobWE9mbyF3?utm_source=generator&theme=0"
+              width="100%"
               height="152"
               frameBorder="0"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"

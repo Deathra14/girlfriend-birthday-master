@@ -1,4 +1,4 @@
-import { FaHeart, FaGithub, FaInstagram } from 'react-icons/fa';
+import { FaHeart, FaInstagram } from 'react-icons/fa'; // Remove FaGithub since it's not being used
 import RavenclawLogo from './RavenclawLogo';
 import { motion } from 'framer-motion';
 
@@ -66,16 +66,7 @@ export default function Footer() {
               <div className="flex justify-center md:justify-end gap-4">
                 <motion.a
                   whileHover={{ scale: 1.1, y: -2 }}
-                  href="https://github.com/yourusername"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#e4d5b7] hover:text-[#ffd700] transition-colors"
-                >
-                  <FaGithub size={24} />
-                </motion.a>
-                <motion.a
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  href="https://instagram.com/yourusername"
+                  href="https://instagram.com/charisma.nia"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#e4d5b7] hover:text-[#ffd700] transition-colors"

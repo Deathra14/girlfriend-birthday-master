@@ -16,11 +16,13 @@ import MessagePopup from '../components/MessagePopup';
 import BirthdayCandle from '../components/BirthdayCandle';
 import FloatingHearts from '../components/FloatingHearts';
 import LoveLetter from '../components/LoveLetter';
+import AudioManager from '../components/AudioManager';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [showWebsite, setShowWebsite] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [mainAudioReady, setMainAudioReady] = useState(false);
 
   // Ensure hydration is complete before rendering
   useEffect(() => {
@@ -48,6 +50,8 @@ export default function Home() {
     // Use callback to avoid state updates during render
     setTimeout(() => {
       setShowWebsite(true);
+      // Start main song when transitioning to main page
+      setMainAudioReady(true);
     }, 0);
   };
 
@@ -74,6 +78,13 @@ export default function Home() {
         exit={{ opacity: 0 }}
         className="min-h-screen bg-gradient-to-br from-[#222f5b] to-[#1a1147] overflow-x-hidden"
       >
+        {mainAudioReady && (
+          <AudioManager 
+            audioUrl="/audio/delicate.mp3" 
+            autoPlay={true}
+            volume={0.6}
+          />
+        )}
         <Particles
           id="tsparticles"
           init={particlesInit}

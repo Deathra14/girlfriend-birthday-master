@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 export default function BirthdayCard({ isVisible, onComplete }) {
   const [timeLeft, setTimeLeft] = useState(8); // 8 seconds to read
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
@@ -52,6 +53,18 @@ export default function BirthdayCard({ isVisible, onComplete }) {
       return () => clearInterval(timer);
     }
   }, [isVisible, hasInteracted, onComplete]);
+
+  useEffect(() => {
+    // Move state update to useEffect
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+      if (onComplete) {
+        onComplete();
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [onComplete]);
 
   const handleContinue = () => {
     setHasInteracted(true);

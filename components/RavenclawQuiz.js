@@ -1,13 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFeather, FaCrown } from 'react-icons/fa';
 
 export default function RavenclawQuiz({ isOpen, setIsOpen }) {
+  const [mounted, setMounted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const questions = [
     {
@@ -31,23 +36,28 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
   ];
 
   const handleAnswer = (answerIndex) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
+    try {
+      if (isAnimating) return;
+      setIsAnimating(true);
 
-    if (answerIndex === questions[currentQuestion].correct) {
-      setScore(score + 1);
-    }
-    
-    if (currentQuestion + 1 < questions.length) {
-      setTimeout(() => {
-        setCurrentQuestion(currentQuestion + 1);
-        setIsAnimating(false);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        setIsComplete(true);
-        setIsAnimating(false);
-      }, 500);
+      if (answerIndex === questions[currentQuestion].correct) {
+        setScore(prev => prev + 1);
+      }
+      
+      if (currentQuestion + 1 < questions.length) {
+        setTimeout(() => {
+          setCurrentQuestion(prev => prev + 1);
+          setIsAnimating(false);
+        }, 500);
+      } else {
+        setTimeout(() => {
+          setIsComplete(true);
+          setIsAnimating(false);
+        }, 500);
+      }
+    } catch (error) {
+      console.error('Error in handleAnswer:', error);
+      setIsAnimating(false);
     }
   };
 
@@ -58,6 +68,8 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
     setIsComplete(false);
     setIsAnimating(false);
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="relative my-20"> {/* Added relative positioning */}

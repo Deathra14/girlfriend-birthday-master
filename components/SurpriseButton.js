@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import Confetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaFeather, FaTimes } from 'react-icons/fa';
+import { FaFeather } from 'react-icons/fa';
+import Confetti from 'react-confetti';
 import MessagePopup from './MessagePopup';
 
 export default function SurpriseButton({ onReveal }) {
   const [isConfettiActive, setIsConfettiActive] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
+  // Remove unused state
+  // const [isAnimating, setIsAnimating] = useState(false);
 
   const handleSurprise = () => {
     setIsConfettiActive(true);
@@ -17,7 +18,6 @@ export default function SurpriseButton({ onReveal }) {
   };
 
   const handleReveal = () => {
-    setIsRevealed(true);
     onReveal?.(); // Call the onReveal callback to close the quiz
     handleSurprise();
   };

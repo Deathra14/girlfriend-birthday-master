@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 export default function CountdownTimer() {
@@ -13,31 +13,34 @@ export default function CountdownTimer() {
     isAfterBirthday: false
   });
 
-  // Corrected date initialization (months are 0-based in JavaScript)
-  const birthDate = new Date(2002, 1, 1); // February 1st, 2002 (month 1)
-  const now = new Date();
-  
-  // Calculate current year's birthday
-  const currentYearBirthday = new Date(now.getFullYear(), 1, 1); // February 1st of current year
-  if (now > currentYearBirthday) {
-    currentYearBirthday.setFullYear(now.getFullYear() + 1);
-  }
+  // Move date calculations into useMemo
+  const dates = useMemo(() => {
+    const birthDate = new Date(2002, 1, 1);
+    const now = new Date();
+    const currentYearBirthday = new Date(now.getFullYear(), 1, 1);
+    
+    if (now > currentYearBirthday) {
+      currentYearBirthday.setFullYear(now.getFullYear() + 1);
+    }
+
+    return { birthDate, currentYearBirthday };
+  }, []);
 
   useEffect(() => {
     const calculateTimeElapsed = () => {
       const now = new Date();
-      const isAfterBirthday = now >= currentYearBirthday;
+      const isAfterBirthday = now >= dates.currentYearBirthday;
 
       // Calculate age
-      let years = now.getFullYear() - birthDate.getFullYear();
-      if (now < new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate())) {
+      let years = now.getFullYear() - dates.birthDate.getFullYear();
+      if (now < new Date(now.getFullYear(), dates.birthDate.getMonth(), dates.birthDate.getDate())) {
         years--;
       }
 
       // Calculate time difference
       const targetDate = isAfterBirthday ? 
         new Date(now.getFullYear() + 1, 1, 1) : 
-        currentYearBirthday;
+        dates.currentYearBirthday;
 
       let diff = Math.abs(targetDate - now);
       
@@ -66,7 +69,7 @@ export default function CountdownTimer() {
     const timer = setInterval(calculateTimeElapsed, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [dates]); // Only depend on memoized dates
 
   return (
     <div className="relative p-4">

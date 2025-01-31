@@ -54,7 +54,7 @@ export default function Footer() {
                 Thank you for visiting!
               </h3>
               <p className="text-[#e4d5b7]/80 font-light italic">
-                "Wit beyond measure is man's greatest treasure"
+                &ldquo;Wit beyond measure is man&apos;s greatest treasure&rdquo;
               </p>
             </div>
 
@@ -101,6 +101,9 @@ export default function Footer() {
               <span className="mx-2">|</span>
               <span>{currentYear}</span>
             </div>
+            <p className="text-[#e4d5b7]/70 text-sm">
+              Made with &ldquo;love&rdquo; and &ldquo;magic&rdquo;
+            </p>
           </div>
         </div>
 

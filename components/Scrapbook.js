@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Scrapbook({ birthDate, name }) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -59,10 +60,13 @@ export default function Scrapbook({ birthDate, name }) {
             {/* Image with Magical Border */}
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-[#b7b7b7]/20 via-transparent to-[#b7b7b7]/20 animate-shine"></div>
-              <img 
+              <Image 
                 src={pages[currentPage].imageUrl}
                 alt={pages[currentPage].title}
-                className="w-full h-[400px] object-cover rounded-lg"
+                width={800}
+                height={600}
+                className="w-full h-auto rounded-lg shadow-lg"
+                priority={currentPage === 0}
               />
               {/* Magical Corners */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#b7b7b7] rounded-tl-lg"></div>

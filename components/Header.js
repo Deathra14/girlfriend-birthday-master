@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-export default function Header() {
+export default function Header({ name, house }) {
   return (
     <header className="relative py-20 overflow-hidden">
       {/* Magical background */}
@@ -45,12 +45,12 @@ export default function Header() {
 
           {/* Main heading */}
           <h1 className="font-magical text-6xl md:text-7xl mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff4b0] to-[#ffd700]">
-            Happy Birthday!
+            {name}
           </h1>
 
           {/* Subtitle */}
           <p className="text-xl text-[#e4d5b7] max-w-2xl mx-auto font-light tracking-wide">
-            Let the magic of this special day surround you ⚡
+            {house && `A proud ${house} student ⚡`}
           </p>
 
           {/* CSS Deathly Hallows Symbol */}

@@ -15,12 +15,13 @@ import { useState } from 'react';
 import BirthdayCandle from '../components/BirthdayCandle';
 import FloatingHearts from '../components/FloatingHearts'; // Add this import
 import LoveLetter from '../components/LoveLetter';
+import type { Engine } from "tsparticles-engine";
 
 export default function Home() {
   const [showWebsite, setShowWebsite] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
 
-  const particlesInit = async (engine) => {
+  const particlesInit = async (engine: Engine) => {
     await loadSlim(engine);
   };
 

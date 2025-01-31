@@ -6,7 +6,6 @@ import BirthdayCard from './BirthdayCard';
 export default function BirthdayCandle({ onComplete }) {
   const [blownCandles, setBlownCandles] = useState(new Array(3).fill(false));
   const [allBlown, setAllBlown] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
   const [showCard, setShowCard] = useState(false);
 
   useEffect(() => {

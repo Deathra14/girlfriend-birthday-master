@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaFeather, FaStar, FaCrown } from 'react-icons/fa';
+import { FaFeather, FaCrown } from 'react-icons/fa';
 
 export default function RavenclawQuiz({ isOpen, setIsOpen }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -16,13 +16,13 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
       fact: "A special day when a future Ravenclaw was born! 🦅"
     },
     {
-      question: "What's Charisma's favorite Harry Potter character?",
+      question: "What&apos;s Charisma&apos;s favorite Harry Potter character?",
       answers: ["Luna Lovegood", "Hermione Granger", "Cho Chang", "Rowena Ravenclaw"],
       correct: 0,
       fact: "Witty and unique, just like Luna! ✨"
     },
     {
-      question: "What are Ravenclaw's house colors?",
+      question: "What are Ravenclaw&apos;s house colors?",
       answers: ["Blue and Bronze", "Blue and Silver", "Purple and Silver", "Purple and Gold"],
       correct: 0,
       fact: "The colors of wisdom and elegance! 💫"
@@ -52,7 +52,7 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
                  hover:border-[#ffd700]/30 transition-all duration-300"
       >
         <h3 className="font-magical text-2xl text-[#ffd700] mb-2">
-          Ravenclaw's Challenge
+          Ravenclaw&apos;s Challenge
         </h3>
         <p className="text-[#e4d5b7] text-sm">
           Test your knowledge about your love
@@ -93,7 +93,12 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
                     <div className="flex flex-col items-center gap-4">
                       <FaFeather className="text-3xl text-[#b7b7b7] animate-float" />
                       <h3 className="text-2xl font-magical">Test Your Knowledge</h3>
-                      <p className="text-sm text-[#b7b7b7]/80">About Charisma & Ravenclaw House</p>
+                      <p className="text-sm text-[#b7b7b7]/80">
+                        It&apos;s time to test your knowledge!
+                      </p>
+                      <p className="text-center text-[#e4d5b7]/70 text-sm">
+                        &ldquo;Knowledge isn&apos;t just power - it&apos;s wonder and delight!&rdquo;
+                      </p>
                     </div>
                   </button>
                 </div>
@@ -158,7 +163,7 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
                         </div>
                         {score === questions.length ? (
                           <p className="text-[#ffd700] text-xl font-magical">
-                            "Wit beyond measure is man's greatest treasure!"
+                            &ldquo;Wit beyond measure is man&apos;s greatest treasure!&rdquo;
                           </p>
                         ) : (
                           <p className="text-[#b7b7b7] italic">

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { FaFeather, FaHeart, FaStar, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 
 export default function MessagePopup({ isOpen = false, onClose = () => {}, messages = [] }) {
   const [currentMessage, setCurrentMessage] = useState(0);

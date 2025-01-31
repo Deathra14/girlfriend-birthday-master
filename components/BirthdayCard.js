@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaStar, FaFeather } from 'react-icons/fa';
 
 export default function BirthdayCard({ isVisible, onComplete }) {
   const [timeLeft, setTimeLeft] = useState(8); // 8 seconds to read
@@ -9,12 +8,9 @@ export default function BirthdayCard({ isVisible, onComplete }) {
 
   useEffect(() => {
     if (isVisible) {
-      // Confetti effect
       const duration = 3000;
       const animationEnd = Date.now() + duration;
       const colors = ['#4B6CB7', '#CD7F32', '#FFD700'];
-
-      const randomInRange = (min, max) => Math.random() * (max - min) + min;
 
       const frame = () => {
         const timeLeft = animationEnd - Date.now();

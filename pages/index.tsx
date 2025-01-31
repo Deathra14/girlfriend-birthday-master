@@ -17,6 +17,7 @@ import BirthdayCandle from '../components/BirthdayCandle';
 import FloatingHearts from '../components/FloatingHearts';
 import LoveLetter from '../components/LoveLetter';
 import AudioManager from '../components/AudioManager';
+import FlyingGift from '../components/FlyingGift';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -78,6 +79,9 @@ export default function Home() {
         exit={{ opacity: 0 }}
         className="min-h-screen bg-gradient-to-br from-[#222f5b] to-[#1a1147] overflow-x-hidden"
       >
+        {/* Add FlyingGift component */}
+        <FlyingGift />
+
         {mainAudioReady && (
           <AudioManager 
             audioUrl="/audio/delicate.mp3" 

@@ -5,38 +5,52 @@ import { FaTimes } from 'react-icons/fa';
 export default function MessagePopup({ isOpen = false, onClose = () => {}, messages = [] }) {
   const [currentMessage, setCurrentMessage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    if (!messages || messages.length === 0) return; // Add guard clause
+    if (!messages?.length || !isOpen || isAnimating || isClosing) return;
 
-    if (isOpen && !isAnimating) {
-      const timer = setInterval(() => {
-        setCurrentMessage((prev) => {
-          if (prev + 1 >= messages.length) {
-            setIsAnimating(true);
-            clearInterval(timer);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, 3000);
-      return () => clearInterval(timer);
-    }
-  }, [isOpen, isAnimating, messages]);
+    const timer = setInterval(() => {
+      setCurrentMessage((prev) => {
+        if (prev + 1 >= messages.length) {
+          setIsAnimating(true);
+          clearInterval(timer);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, isAnimating, isClosing, messages]);
 
   const handleClose = () => {
-    setCurrentMessage(0);
-    setIsAnimating(false);
-    onClose();
+    setIsClosing(true);
+    setTimeout(() => {
+      setCurrentMessage(0);
+      setIsAnimating(false);
+      setIsClosing(false);
+      onClose();
+    }, 300);
   };
 
-  // Guard against empty messages
-  if (!messages || messages.length === 0) return null;
+  if (!messages?.length) return null;
+
+  const variants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: { opacity: 1, y: 0, scale: 1 },
+    exit: { opacity: 0, y: -20, scale: 0.95 }
+  };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999]">
+        <motion.div
+          className="fixed inset-0 flex items-center justify-center z-[9999]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -48,9 +62,10 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
 
           {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, y: -50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
             className="relative w-[90%] max-w-lg max-h-[85vh] overflow-auto bg-[#192341] 
                       rounded-xl shadow-2xl border border-[#ffd700]/20"
             style={{
@@ -77,7 +92,7 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={onClose}
+                onClick={handleClose}
                 className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center 
                          bg-[#0A1E3F] rounded-full border border-[#ffd700]/30
                          text-[#e4d5b7] hover:text-[#ffd700] transition-all"
@@ -90,9 +105,10 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentMessage}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={variants}
                     className="text-center"
                   >
                     <p className="font-magical text-xl sm:text-2xl text-[#e4d5b7] leading-relaxed">
@@ -143,7 +159,7 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
               </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

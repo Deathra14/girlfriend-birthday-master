@@ -7,6 +7,7 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
   const [score, setScore] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const questions = [
     {
@@ -30,15 +31,32 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
   ];
 
   const handleAnswer = (answerIndex) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+
     if (answerIndex === questions[currentQuestion].correct) {
       setScore(score + 1);
     }
     
     if (currentQuestion + 1 < questions.length) {
-      setCurrentQuestion(currentQuestion + 1);
+      setTimeout(() => {
+        setCurrentQuestion(currentQuestion + 1);
+        setIsAnimating(false);
+      }, 500);
     } else {
-      setIsComplete(true);
+      setTimeout(() => {
+        setIsComplete(true);
+        setIsAnimating(false);
+      }, 500);
     }
+  };
+
+  const handleReset = () => {
+    setShowQuiz(false);
+    setCurrentQuestion(0);
+    setScore(0);
+    setIsComplete(false);
+    setIsAnimating(false);
   };
 
   return (
@@ -171,12 +189,7 @@ export default function RavenclawQuiz({ isOpen, setIsOpen }) {
                           </p>
                         )}
                         <motion.button
-                          onClick={() => {
-                            setShowQuiz(false);
-                            setCurrentQuestion(0);
-                            setScore(0);
-                            setIsComplete(false);
-                          }}
+                          onClick={handleReset}
                           className="mt-8 px-8 py-3 bg-[#2A4B8C] text-[#b7b7b7] rounded-lg
                                    hover:bg-[#3A5B9C] transition-colors"
                           whileHover={{ scale: 1.05 }}

@@ -1,114 +1,163 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Head from 'next/head';
+import Particles from 'react-tsparticles';
+import { loadSlim } from 'tsparticles-slim';
+import Header from '../components/Header';
+import SurpriseButton from '../components/SurpriseButton';
+import Footer from '../components/Footer';
+import MusicPlayer from '../components/MusicPlayer';
+import CountdownTimer from '../components/CountdownTimer';
+import SocialShare from '../components/SocialShare';
+import { motion } from 'framer-motion';
+import Scrapbook from '../components/Scrapbook';
+import RavenclawQuiz from '../components/RavenclawQuiz';
+import MessagePopup from '../components/MessagePopup';
+import { useState } from 'react';
+import BirthdayCandle from '../components/BirthdayCandle';
+import FloatingHearts from '../components/FloatingHearts'; // Add this import
+import LoveLetter from '../components/LoveLetter';
 
 export default function Home() {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [showWebsite, setShowWebsite] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const particlesInit = async (engine) => {
+    await loadSlim(engine);
+  };
+
+  const handleSurpriseReveal = () => {
+    // Close quiz when surprise is revealed
+    setIsQuizOpen(false);
+  };
+
+  if (!showWebsite) {
+    return <BirthdayCandle onComplete={() => setShowWebsite(true)} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#222f5b] to-[#1a1147] overflow-x-hidden">
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={{
+          particles: {
+            number: { value: 50 },
+            color: { value: "#b7b7b7" },
+            shape: {
+              type: ["circle"],
+              options: {
+                circle: {
+                  blur: 5,
+                }
+              }
+            },
+            opacity: { value: 0.3 },
+            size: { value: { min: 1, max: 3 } },
+            move: { 
+              enable: true,
+              speed: 0.5,
+              direction: "none",
+              random: true,
+              straight: false,
+              outModes: "out"
+            }
+          },
+          interactivity: {
+            events: {
+              onHover: {
+                enable: true,
+                mode: "grab"
+              }
+            },
+            modes: {
+              grab: {
+                distance: 140,
+                links: {
+                  opacity: 0.2
+                }
+              }
+            }
+          }
+        }}
+      />
+      <Head>
+        <title>Happy Birthday Charisma! 🦅</title>
+        <meta name="description" content="A magical birthday celebration for Charisma Husniati" />
+      </Head>
+
+      <Header name="Charisma Husniati" house="Ravenclaw" />
+      
+      <main className="relative">
+        <div className="container mx-auto px-4 py-8">
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-24 pt-12"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <motion.h1 className="text-7xl md:text-9xl font-magical mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#ff69b4] to-[#ffd700]">
+              Happy Birthday!
+            </motion.h1>
+            <motion.p className="text-2xl md:text-3xl text-[#e4d5b7] font-light">
+              To the most magical Ravenclaw ✨
+            </motion.p>
+          </motion.section>
+
+          <section className="mb-32">
+            <CountdownTimer />
+          </section>
+
+          <motion.section 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mb-32"
           >
-            Read our docs
-          </a>
+            <LoveLetter />
+          </motion.section>
+
+          <section className="mb-32 relative">
+            <div className="absolute inset-0 bg-[#192341]/10 rounded-3xl blur-3xl"></div>
+            <Scrapbook birthDate="2002-02-01" name="Charisma" />
+          </section>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-32">
+            <motion.section
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <SurpriseButton onReveal={handleSurpriseReveal} />
+            </motion.section>
+
+            <motion.section
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <RavenclawQuiz isOpen={isQuizOpen} setIsOpen={setIsQuizOpen} />
+            </motion.section>
+          </div>
+
+          {/* Floating Controls Container */}
+          <div className="fixed bottom-0 right-0 z-40 p-4 flex flex-col gap-4 items-end">
+            {/* Music Player Toggle */}
+            <div className="relative group">
+              <MusicPlayer />
+            </div>
+
+            {/* Social Share Toggle */}
+            <div className="relative group">
+              <SocialShare />
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      <div className="relative">
+        <FloatingHearts count={12} />
+        <Footer />
+      </div>
+
+      <MessagePopup />
     </div>
   );
 }

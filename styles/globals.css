@@ -2,9 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+@font-face {
+  font-family: 'MagicalFont';
+  src: url('/fonts/harry-potter.woff2') format('woff2');
+}
+
+@layer base {
+  :root {
+    --font-cinzel: var(--font-cinzel);
+    --font-great-vibes: var(--font-great-vibes);
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --modal-z-index: 1000;
+  --modal-backdrop-z-index: 999;
+  --z-base: 1;
+  --z-content: 10;
+  --z-interactive: 20;
+  --z-scrapbook: 30;
+  --z-quiz: 40;
+  --z-modal-backdrop: 99998;
+  --z-modal-content: 99999;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,4 +41,452 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Add sophisticated background pattern */
+.bg-pattern {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 40% 20%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(124, 58, 237, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(167, 139, 250, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(167, 139, 250, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+}
+
+/* Add subtle animation to links */
+.hover-link {
+  position: relative;
+}
+
+.hover-link::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.hover-link:hover::after {
+  transform: scaleX(1);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Enhance backdrop blur performance */
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.magical-bg {
+  background: 
+    linear-gradient(rgba(25, 22, 84, 0.2), rgba(25, 22, 84, 0.2)),
+    url('/images/stars.png'),
+    radial-gradient(circle at center, #1a1147 0%, #000000 100%);
+  background-size: cover, 100px 100px, cover;
+  animation: twinkling 8s infinite linear;
+  background-color: #1a1147;
+  background-image: 
+    radial-gradient(circle at top right, rgba(121, 68, 154, 0.13), transparent),
+    radial-gradient(circle at 20% 80%, rgba(41, 196, 255, 0.13), transparent);
+  isolation: isolate;
+}
+
+@keyframes twinkling {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, -200px -200px, 0 0; }
+}
+
+@keyframes shine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateY(20px); }
+  10%, 90% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes messageFloat {
+  0%, 100% { opacity: 0; transform: translateY(20px); }
+  20%, 80% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flicker {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.8;
+  }
+}
+
+.animate-flicker {
+  animation: flicker 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes float-sparkles {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.float-sparkles {
+  animation: float-sparkles 2s ease-in-out infinite;
+}
+
+.animate-shine {
+  animation: shine 3s linear infinite;
+  background-size: 200% 100%;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 2s infinite ease-in-out;
+}
+
+.magical-border {
+  border: 2px solid transparent;
+  background: linear-gradient(45deg, #ffd700, #ff69b4, #ffd700) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+}
+
+.wax-seal {
+  position: relative;
+  background: radial-gradient(circle at center, #8B0000, #4B0082);
+  border-radius: 50%;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.wax-seal::before {
+  content: 'HP';
+  font-family: var(--font-great-vibes);
+  color: #ffd700;
+}
+
+@layer components {
+  .magical-text {
+    @apply font-serif text-transparent bg-clip-text bg-gradient-to-r from-gryffindor-gold to-yellow-500;
+    text-shadow: 0 0 10px rgba(211, 166, 37, 0.3);
+  }
+
+  .magical-title {
+    @apply font-magical text-4xl md:text-6xl;
+  }
+
+  .wizard-text {
+    @apply font-serif tracking-wider;
+  }
+}
+
+.parchment-bg {
+  background-color: #FFF7E6;
+  background-image: url('/images/parchment-texture.png');
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* Add sparkle animation */
+.sparkle {
+  position: relative;
+}
+
+.sparkle::after {
+  content: '✨';
+  position: absolute;
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Magic spell effects */
+.spell-circle {
+  @apply absolute inset-0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(211, 166, 37, 0.1) 50%, transparent 100%);
+  animation: spell-pulse 2s ease-in-out infinite;
+}
+
+@keyframes spell-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.font-magical {
+  font-family: 'MagicalFont', 'Playfair Display', serif;
+}
+
+/* Ensure modals stay on top */
+.modal-backdrop {
+  z-index: var(--z-modal-backdrop) !important;
+  position: fixed !important;
+}
+
+.modal-content {
+  z-index: var(--z-modal-content) !important;
+  position: relative;
+}
+
+/* Add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  @apply scroll-smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1147;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ffd700;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffed4a;
+}
+
+.stars-animation::before,
+.stars-animation::after {
+  content: '✦';
+  @apply absolute text-[#ffd700] text-lg;
+  animation: twinkle 2s infinite;
+}
+
+.stars-animation::before {
+  left: 0;
+}
+
+.stars-animation::after {
+  left: 1em;
+  animation-delay: 0.5s;
+}
+
+.delay-75::before,
+.delay-75::after {
+  animation-delay: 0.75s;
+}
+
+/* Improved button interaction */
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Z-index hierarchy */
+.z-content {
+  z-index: var(--z-content);
+}
+
+.z-interactive {
+  z-index: var(--z-interactive);
+}
+
+.z-scrapbook {
+  z-index: var(--z-scrapbook);
+}
+
+.z-modal {
+  z-index: var(--z-modal);
+}
+
+.z-overlay {
+  z-index: var(--z-overlay);
+}
+
+/* Ensure proper stacking context */
+.stacking-context {
+  isolation: isolate;
+}
+
+/* Add styles to prevent background content from showing through */
+body.modal-open {
+  overflow: hidden;
+  position: relative;
+}
+
+.modal-container {
+  position: fixed;
+  isolation: isolate;
+  position: fixed !important;
+  z-index: var(--z-modal-content) !important;
+}
+
+/* Ensure messages stay on absolute top */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+  isolation: isolate;
+}
+
+/* Force other components to stay behind modal */
+.scrapbook-section {
+  z-index: var(--z-scrapbook);
+  position: relative;
+}
+
+.quiz-section {
+  z-index: var(--z-quiz);
+  position: relative;
+}
+
+/* Mobile Optimization */
+@layer utilities {
+  .container-mobile {
+    @apply px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto;
+  }
+  
+  .grid-mobile {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4;
+  }
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+  .font-magical {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+  }
+  
+  .text-responsive {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+  }
+}
+
+/* Mobile-first grid system */
+.mobile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Responsive padding and margins */
+.responsive-spacing {
+  padding: clamp(1rem, 5vw, 2rem);
+  margin: clamp(0.5rem, 3vw, 1.5rem);
+}
+
+/* Mobile navigation adjustments */
+@media (max-width: 768px) {
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 30, 63, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 1rem;
+    z-index: 50;
+  }
+}
+
+/* Mobile-optimized modals */
+@media (max-width: 640px) {
+  .modal-mobile {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+}
+
+/* Section spacing utilities */
+.section-spacing {
+  @apply py-16 md:py-24;
+}
+
+/* Improved container width */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Section transitions */
+.section-fade-up {
+  @apply transition-all duration-700 ease-out;
+}
+
+/* Responsive typography */
+.responsive-title {
+  @apply text-4xl md:text-6xl lg:text-7xl;
+}
+
+.responsive-subtitle {
+  @apply text-xl md:text-2xl lg:text-3xl;
+}
+
+/* Content grid layouts */
+.content-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+}
+
+/* Enhanced mobile spacing */
+@media (max-width: 640px) {
+  .section-spacing {
+    @apply py-12;
+  }
+  
+  .container {
+    @apply px-4;
+  }
 }

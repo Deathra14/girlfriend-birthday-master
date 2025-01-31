@@ -6,23 +6,36 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
   const [currentMessage, setCurrentMessage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!messages?.length || !isOpen || isAnimating || isClosing) return;
+    setMounted(true);
+  }, []);
 
-    const timer = setInterval(() => {
-      setCurrentMessage((prev) => {
-        if (prev + 1 >= messages.length) {
-          setIsAnimating(true);
-          clearInterval(timer);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 3000);
+  useEffect(() => {
+    if (!mounted || !messages?.length || !isOpen || isAnimating || isClosing) return;
 
-    return () => clearInterval(timer);
-  }, [isOpen, isAnimating, isClosing, messages]);
+    try {
+      const timer = setInterval(() => {
+        setCurrentMessage((prev) => {
+          if (prev + 1 >= messages.length) {
+            setIsAnimating(true);
+            clearInterval(timer);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 3000);
+
+      return () => clearInterval(timer);
+    } catch (error) {
+      console.error('Error in message timer:', error);
+    }
+  }, [mounted, isOpen, isAnimating, isClosing, messages]);
+
+  // Don't render until mounted
+  if (!mounted) return null;
+  if (!messages?.length) return null;
 
   const handleClose = () => {
     setIsClosing(true);
@@ -33,8 +46,6 @@ export default function MessagePopup({ isOpen = false, onClose = () => {}, messa
       onClose();
     }, 300);
   };
-
-  if (!messages?.length) return null;
 
   const variants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },

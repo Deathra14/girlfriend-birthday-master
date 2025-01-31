@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Head from 'next/head';
 import Particles from 'react-tsparticles';
 import { loadSlim } from 'tsparticles-slim';
@@ -18,18 +18,35 @@ import FloatingHearts from '../components/FloatingHearts';
 import LoveLetter from '../components/LoveLetter';
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
   const [showWebsite, setShowWebsite] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
+  // Ensure hydration is complete before rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+    try {
+      await loadSlim(engine);
+    } catch (error) {
+      console.error('Particles initialization failed:', error);
+    }
   }, []);
 
   const handleSurpriseReveal = () => {
-    setIsQuizOpen(false);
-    setIsExiting(true);
+    try {
+      setIsQuizOpen(false);
+      setIsExiting(true);
+    } catch (error) {
+      console.error('Error in handleSurpriseReveal:', error);
+    }
   };
+
+  // Don't render anything until client-side hydration is complete
+  if (!mounted) return null;
 
   if (!showWebsite) {
     return <BirthdayCandle onComplete={() => setShowWebsite(true)} />;

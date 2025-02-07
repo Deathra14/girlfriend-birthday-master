@@ -100,7 +100,7 @@ export default function BirthdayCard({ onComplete }) {
               transition={{ duration: 10, ease: "linear" }} // Updated duration to 10s
             />
 
-            {/* Card Content */}
+            {/* Updated Card Content */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -108,17 +108,13 @@ export default function BirthdayCard({ onComplete }) {
               className="space-y-6"
             >
               <h2 className="text-4xl sm:text-5xl font-magical text-[#CD7F32] mb-6">
-                Dear My Love Charisma
+                Even Though the Birthday is Over...
               </h2>
 
               <div className="space-y-4 text-[#e4d5b7]">
                 <p className="text-lg sm:text-xl font-magical leading-relaxed">
-                  As you blow out these magical candles,<br/>
-                  may your wishes take flight and your dreams soar high.
-                </p>
-                <p className="text-base sm:text-lg leading-relaxed">
-                  On this special day, let your Ravenclaw wisdom<br/>
-                  guide you to another year of magical adventures.
+                  The celebration lives on in every magical moment.<br/>
+                  Relive the sparkle of yesterday and embrace the magic ahead.
                 </p>
               </div>
 
@@ -128,7 +124,7 @@ export default function BirthdayCard({ onComplete }) {
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  With Love 💝
+                  With Love & Nostalgia 💝
                 </motion.p>
               </div>
 

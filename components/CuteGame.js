@@ -8,11 +8,61 @@ const GAME_WIDTH = typeof window !== 'undefined' ? Math.min(1000, window.innerWi
 const GAME_HEIGHT = typeof window !== 'undefined' ? Math.min(600, window.innerHeight - 100) : 600;
 const BIRD_SIZE = 30;
 const BIRD_X = 200; // constant bird horizontal position
-const GRAVITY = 0.6;
-const FLAP_STRENGTH = -8;
-const PIPE_SPEED = 3;
-const PIPE_SPACING = Math.max(300, GAME_WIDTH * 0.4);
+
 const PIPE_WIDTH = PIPE_CONSTANTS.WIDTH; // from imported Pipes
+
+const GAME_CONFIG = {
+  physics: {
+    gravity: 0.6,
+    flapStrength: -8,
+    maxVelocity: {
+      up: -8,
+      down: 10
+    }
+  },
+  pipes: {
+    speed: 3,
+    gapSize: 150,
+    spacing: Math.max(300, GAME_WIDTH * 0.4), // Added pipe spacing config
+    minDistance: 150,
+    spawnInterval: 1500
+  },
+  visuals: {
+    colors: {
+      primary: '#4B6CB7',
+      secondary: '#2A4B8C',
+      accent: '#ffd700',
+      danger: '#ef4444'
+    },
+    effects: {
+      glowStrong: '0 0 20px rgba(75,108,183,0.5)',
+      glowWeak: '0 0 10px rgba(75,108,183,0.3)'
+    }
+  }
+};
+
+const THEME = {
+  colors: {
+    primary: '#4B6CB7', // Ravenclaw blue
+    secondary: '#2A4B8C', // Darker blue
+    accent: '#ffd700', // Gold
+    background: 'linear-gradient(135deg, #192341 0%, #1A1147 100%)',
+  },
+  shadows: {
+    glow: '0 0 20px rgba(75,108,183,0.3)',
+  }
+};
+
+const useDebouncedCallback = (callback, delay) => {
+  const timeoutRef = useRef(null);
+  
+  return useCallback((...args) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => callback(...args), delay);
+  }, [callback, delay]);
+};
 
 export default function CuteGame() {
   const [gameState, setGameState] = useState("start");
@@ -31,10 +81,28 @@ export default function CuteGame() {
   const birdYRef = useRef(birdY);
   const birdVelocityRef = useRef(birdVelocity);
 
-  const updateBirdPosition = useCallback(() => {
+  // Add sound effects
+  const scoreSound = useRef(
+    typeof Audio !== "undefined" 
+      ? new Audio("/audio/score.mp3") 
+      : null
+  );
+
+  // Add sound play function
+  const playScoreSound = useCallback(() => {
+    if (scoreSound.current) {
+      scoreSound.current.currentTime = 0;
+      scoreSound.current.volume = 0.3;
+      scoreSound.current.play().catch(error => {
+        console.log("Audio play failed:", error);
+      });
+    }
+  }, []);
+
+  const updateBirdPosition = useCallback((gravity) => {
     if (gameState !== "playing") return;
     
-    const newVelocity = birdVelocityRef.current + GRAVITY;
+    const newVelocity = birdVelocityRef.current + gravity;
     const newPosition = birdYRef.current + newVelocity;
     
     birdVelocityRef.current = newVelocity;
@@ -60,8 +128,8 @@ export default function CuteGame() {
 
   const handleFlap = useCallback(() => {
     if (gameState === "playing") {
-      birdVelocityRef.current = FLAP_STRENGTH;
-      setBirdVelocity(FLAP_STRENGTH);
+      birdVelocityRef.current = GAME_CONFIG.physics.flapStrength;
+      setBirdVelocity(GAME_CONFIG.physics.flapStrength);
       setIsFlapping(true);
       setTimeout(() => setIsFlapping(false), 150);
     } else if (gameState === "start") {
@@ -70,7 +138,7 @@ export default function CuteGame() {
   }, [gameState, startGame]);
 
   const generateNewPipe = useCallback(() => {
-    const gapSize = 150;
+    const gapSize = GAME_CONFIG.pipes.gapSize;
     const minGapY = gapSize;
     const maxGapY = GAME_HEIGHT - gapSize;
     const gapY = Math.random() * (maxGapY - minGapY) + minGapY;
@@ -83,47 +151,68 @@ export default function CuteGame() {
     };
   }, []);
 
-  const gameTick = useCallback(() => {
+  const gameTick = useCallback((time) => {
     if (gameState !== "playing") return;
     
-    updateBirdPosition();
-    
-    // Update pipes atomically (fresh state each frame)
+    const delta = time - (lastTimeRef.current || time);
+    lastTimeRef.current = time;
+
+    // Update bird with delta time
+    const gravity = GAME_CONFIG.physics.gravity * (delta / 16.667); // Normalize for 60fps
+    updateBirdPosition(gravity);
+
+    // Update pipes with interpolation
     setPipes(prev => {
-      let collision = false;
-      const newPipes = prev.map(pipe => {
-        const newX = pipe.x - PIPE_SPEED;
-        
-        // Check collision if bird overlaps horizontally with the pipe
-        if (newX < BIRD_X + BIRD_SIZE && newX + PIPE_WIDTH > BIRD_X) {
-          const topGap = pipe.gapY - pipe.gapSize / 2;
-          const bottomGap = pipe.gapY + pipe.gapSize / 2;
-          if (birdYRef.current < topGap || birdYRef.current + BIRD_SIZE > bottomGap) {
-            collision = true;
-          }
-        }
-        
-        // Mark score if passed
-        if (!pipe.scored && newX + PIPE_WIDTH < BIRD_X) {
-          pipe.scored = true;
-          setScore(s => s + 1);
-        }
-        
-        return { ...pipe, x: newX };
-      }).filter(pipe => pipe.x > -PIPE_WIDTH);
-      
-      if (newPipes.length === 0 || newPipes[newPipes.length - 1].x < GAME_WIDTH - PIPE_SPACING) {
-        newPipes.push(generateNewPipe());
-      }
-      
-      if (collision) {
-        setGameState("gameover");
-      }
-      return newPipes;
+      const pipeSpeed = GAME_CONFIG.pipes.speed * (delta / 16.667);
+      return updatePipesWithCollision(prev, pipeSpeed);
     });
-    
+
     animationFrameRef.current = requestAnimationFrame(gameTick);
-  }, [gameState, updateBirdPosition, generateNewPipe]);
+  }, [gameState, updateBirdPosition]);
+
+  const [hitEffect, setHitEffect] = useState(false);
+
+  const updatePipesWithCollision = useCallback((pipes, speed) => {
+    let collision = false;
+    const newPipes = pipes.map(pipe => {
+      const newX = pipe.x - speed;
+      
+      // Optimized collision check
+      if (!collision && 
+          newX < BIRD_X + BIRD_SIZE && 
+          newX + PIPE_WIDTH > BIRD_X) {
+        const birdY = birdYRef.current;
+        const topGap = pipe.gapY - pipe.gapSize / 2;
+        const bottomGap = pipe.gapY + pipe.gapSize / 2;
+        
+        if (birdY < topGap || birdY + BIRD_SIZE > bottomGap) {
+          collision = true;
+          setHitEffect(true);
+          setTimeout(() => setHitEffect(false), 300);
+        }
+      }
+      
+      // Score update with visual feedback
+      if (!pipe.scored && newX + PIPE_WIDTH < BIRD_X) {
+        setScore(s => s + 1);
+        playScoreSound(); // Now properly defined
+      }
+      
+      return { ...pipe, x: newX, scored: newX + PIPE_WIDTH < BIRD_X };
+    }).filter(pipe => pipe.x > -PIPE_WIDTH);
+
+    // Optimized pipe spawning
+    if (newPipes.length === 0 || 
+        newPipes[newPipes.length - 1].x < GAME_WIDTH - GAME_CONFIG.pipes.spacing) {
+      newPipes.push(generateNewPipe());
+    }
+
+    if (collision) {
+      setGameState("gameover");
+    }
+
+    return newPipes;
+  }, [playScoreSound]);
 
   useEffect(() => {
     if (gameState === "playing") {
@@ -177,6 +266,18 @@ export default function CuteGame() {
 
   const [scoreAnimation] = useState(false);
 
+  const ScoreDisplay = React.memo(({ score }) => (
+    <motion.div
+      className="score-display"
+      animate={scoreAnimation ? {
+        scale: [1, 1.2, 1],
+        y: [0, -10, 0]
+      } : {}}
+    >
+      {score}
+    </motion.div>
+  ));
+
   return (
     <div
       className="relative mx-auto select-none overflow-hidden rounded-xl shadow-2xl touch-none"
@@ -185,64 +286,109 @@ export default function CuteGame() {
         height: GAME_HEIGHT,
         maxWidth: '100vw',
         maxHeight: '80vh',
-        background: 'linear-gradient(to bottom right, #2C5364, #203A43, #0F2027)'
+        background: THEME.colors.background,
       }}
       onClick={handleFlap}
     >
+      <motion.div
+        animate={{
+          backgroundColor: hitEffect ? GAME_CONFIG.visuals.colors.danger : 'transparent'
+        }}
+        className="absolute inset-0 pointer-events-none"
+      />
       <ParallaxBackground />
       
       <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, transparent 30%, rgba(15,32,39,0.4) 100%)'
-        }} 
+        className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/30 to-transparent"
       />
       
       {gameState === "start" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center bg-black/40 backdrop-blur-sm">
-          <h1 className="text-3xl md:text-5xl text-white mb-4 font-magical">Flappy Magic</h1>
-          <p className="text-sm md:text-lg text-white/90 mb-6">
-            {window.innerWidth <= 768 ? "Tap screen to flap" : "Press SPACE to flap"}
-          </p>
-          <button 
-            onClick={startGame} 
-            className="px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-pink-500 to-purple-500 
-                     text-white rounded-full shadow-lg hover:shadow-xl 
-                     transition-all transform hover:scale-105"
+        <motion.div 
+          className="absolute inset-0 flex flex-col items-center justify-center text-center 
+                     bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-blue-300/30 rounded-full"
+              animate={{
+                y: [0, -200],
+                x: [-20, 20],
+                opacity: [0, 1, 0],
+                scale: [0, 1.5, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: i * 0.1,
+              }}
+              style={{
+                left: `${Math.random() * 100}%`,
+                bottom: "-10px"
+              }}
+            />
+          ))}
+
+          <motion.h1 
+            className="text-4xl md:text-6xl text-white mb-4 font-magical"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            Start Game
-          </button>
-        </div>
+            Flappy Magic
+          </motion.h1>
+          
+          <motion.p 
+            className="text-sm md:text-lg text-white/90 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            {window.innerWidth <= 768 ? "Tap screen to flap" : "Press SPACE to flap"}
+          </motion.p>
+          
+          <motion.button 
+            onClick={startGame}
+            className="px-8 py-4 bg-gradient-to-r from-[#4B6CB7] to-[#2A4B8C] 
+                     text-white font-magical rounded-full shadow-lg
+                     border border-white/10 backdrop-blur-sm
+                     hover:shadow-[0_0_30px_rgba(75,108,183,0.5)]
+                     transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Start Flying
+          </motion.button>
+        </motion.div>
       )}
       
       {gameState === "playing" && (
         <>
-          <div className="absolute top-0 left-0 right-0 z-10 p-4">
-            <div className="flex justify-between items-center max-w-xs mx-auto">
+          <div className="absolute top-4 left-0 right-0 z-10">
+            <div className="flex justify-center gap-8 max-w-xs mx-auto">
               <motion.div
                 animate={scoreAnimation ? {
                   scale: [1, 1.2, 1],
-                  color: ['#ffffff', '#ffd700', '#ffffff']
+                  y: [0, -10, 0]
                 } : {}}
-                className="relative"
+                className="relative px-6 py-3 bg-white/10 rounded-xl backdrop-blur-md
+                         border border-white/20 shadow-lg"
               >
-                <div className="absolute -inset-4 bg-black/20 backdrop-blur-sm rounded-xl" />
-                <div className="relative flex items-center gap-2 px-4 py-2">
-                  <span className="text-xs font-magical text-white/80">Score</span>
-                  <span className="text-2xl font-bold font-magical bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
-                    {score}
-                  </span>
-                </div>
+                <p className="text-sm text-white/80 font-magical">Score</p>
+                <p className="text-3xl font-bold font-magical bg-gradient-to-r 
+                          from-white to-[#ffd700] bg-clip-text text-transparent">
+                  {score}
+                </p>
               </motion.div>
 
-              <div className="relative">
-                <div className="absolute -inset-4 bg-black/20 backdrop-blur-sm rounded-xl" />
-                <div className="relative flex items-center gap-2 px-4 py-2">
-                  <span className="text-xs font-magical text-white/80">Best</span>
-                  <span className="text-2xl font-bold font-magical bg-gradient-to-r from-[#ffd700] to-[#ff69b4] bg-clip-text text-transparent">
-                    {Math.max(score, localStorage.getItem('highScore') || 0)}
-                  </span>
-                </div>
+              <div className="relative px-6 py-3 bg-white/10 rounded-xl backdrop-blur-md
+                          border border-white/20 shadow-lg">
+                <p className="text-sm text-white/80 font-magical">Best</p>
+                <p className="text-3xl font-bold font-magical bg-gradient-to-r 
+                          from-[#ffd700] to-[#ff69b4] bg-clip-text text-transparent">
+                  {Math.max(score, localStorage.getItem('highScore') || 0)}
+                </p>
               </div>
             </div>
           </div>
@@ -254,10 +400,13 @@ export default function CuteGame() {
               height: 24,
               left: BIRD_X,
               top: birdY,
+              filter: `drop-shadow(${GAME_CONFIG.visuals.effects.glowWeak})`,
               transform: `rotate(${Math.min(Math.max(birdVelocity * 4, -30), 30)}deg)`,
               zIndex: 30
             }}
-            animate={{ scale: isFlapping ? [1.2, 0.8, 1] : 1 }} // Added bounce animation here
+            animate={{ 
+              scale: isFlapping ? [1.2, 0.8, 1] : 1,
+            }}
             transition={{ duration: 0.2 }}
           >
             <div className="relative w-full h-full">
@@ -276,17 +425,31 @@ export default function CuteGame() {
               <div className="absolute right-0 top-1/2 w-4 h-3 bg-orange-500"
                    style={{ clipPath: 'polygon(0 0, 100% 50%, 0 100%)' }} />
             </div>
+            {isFlapping && (
+              <motion.div
+                className="bird-trail"
+                initial={{ opacity: 0.5, scale: 1 }}
+                animate={{ opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              />
+            )}
           </motion.div>
           <Pipes pipes={pipes} GAME_HEIGHT={GAME_HEIGHT} />
         </>
       )}
 
       {gameState === "gameover" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center bg-black/60 backdrop-blur-sm">
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center 
+                     bg-gradient-to-b from-black/60 to-black/40 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white/10 p-8 rounded-2xl backdrop-blur-md"
+            className="bg-gradient-to-br from-[#192341]/80 to-[#1A1147]/80 p-8 rounded-2xl 
+                     backdrop-blur-md border border-white/10 shadow-2xl"
           >
             <h1 className="text-4xl text-white mb-6 font-magical drop-shadow-glow">Game Over!</h1>
             
@@ -307,25 +470,28 @@ export default function CuteGame() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <button 
                 onClick={startGame} 
-                className="w-full px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 
-                         text-white rounded-full shadow-lg hover:shadow-xl 
-                         transition-all transform hover:scale-105"
+                className="w-full px-6 py-3 bg-gradient-to-r from-[#4B6CB7] to-[#2A4B8C] 
+                         text-white font-magical rounded-full shadow-lg
+                         border border-white/10 backdrop-blur-sm
+                         hover:shadow-[0_0_30px_rgba(75,108,183,0.5)]
+                         transition-all duration-300"
               >
                 Try Again
               </button>
               <button 
                 onClick={() => window.location.href = "/"} 
-                className="w-full px-6 py-3 bg-white/10 text-white rounded-full 
-                         hover:bg-white/20 transition-all"
+                className="w-full px-6 py-3 bg-white/10 text-white font-magical 
+                         rounded-full hover:bg-white/20 transition-all
+                         border border-white/10 backdrop-blur-sm"
               >
-                Exit
+                Exit Game
               </button>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

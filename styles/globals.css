@@ -401,6 +401,10 @@ body.modal-open {
   .grid-mobile {
     @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4;
   }
+
+  .drop-shadow-glow {
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+  }
 }
 
 /* Responsive text sizes */

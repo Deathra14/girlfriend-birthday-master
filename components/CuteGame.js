@@ -66,6 +66,7 @@ export default function CuteGame() {
   const pipeTimerRef = useRef(0);
   
   const [isFlapping, setIsFlapping] = useState(false);
+  const [scoreAnimation] = useState(false); // Added scoreAnimation state
 
   const birdYRef = useRef(birdY);
   const birdVelocityRef = useRef(birdVelocity);
@@ -122,28 +123,7 @@ export default function CuteGame() {
     };
   }, []);
 
-  const gameTick = useCallback((time) => {
-    if (gameState !== "playing") return;
-    
-    const delta = time - (lastTimeRef.current || time);
-    lastTimeRef.current = time;
-
-    // Update bird with delta time
-    const gravity = GAME_CONFIG.physics.gravity * (delta / 16.667); // Normalize for 60fps
-    updateBirdPosition(gravity);
-
-    // Update pipes with interpolation
-    setPipes(prev => {
-      const pipeSpeed = GAME_CONFIG.pipes.speed * (delta / 16.667);
-      return updatePipesWithCollision(prev, pipeSpeed);
-    });
-
-    animationFrameRef.current = requestAnimationFrame(gameTick);
-  }, [gameState, updateBirdPosition, updatePipesWithCollision]); // Added updatePipesWithCollision
-
-  const [hitEffect, setHitEffect] = useState(false);
-
-  const updatePipesWithCollision = useCallback((pipes, speed) => {
+  function updatePipesWithCollision(pipes, speed) {
     let collision = false;
     const newPipes = pipes.map(pipe => {
       const newX = pipe.x - speed;
@@ -166,24 +146,43 @@ export default function CuteGame() {
       // Score update with visual feedback
       if (!pipe.scored && newX + PIPE_WIDTH < BIRD_X) {
         setScore(s => s + 1);
-        // Removed playScoreSound() call because no score audio needed
       }
       
       return { ...pipe, x: newX, scored: newX + PIPE_WIDTH < BIRD_X };
     }).filter(pipe => pipe.x > -PIPE_WIDTH);
-
-    // Optimized pipe spawning
+  
     if (newPipes.length === 0 || 
         newPipes[newPipes.length - 1].x < GAME_WIDTH - GAME_CONFIG.pipes.spacing) {
       newPipes.push(generateNewPipe());
     }
-
+  
     if (collision) {
       setGameState("gameover");
     }
-
+  
     return newPipes;
-  }, [generateNewPipe]); // Added generateNewPipe
+  }
+
+  const gameTick = useCallback((time) => {
+    if (gameState !== "playing") return;
+    
+    const delta = time - (lastTimeRef.current || time);
+    lastTimeRef.current = time;
+
+    // Update bird with delta time
+    const gravity = GAME_CONFIG.physics.gravity * (delta / 16.667); // Normalize for 60fps
+    updateBirdPosition(gravity);
+
+    // Update pipes with interpolation
+    setPipes(prev => {
+      const pipeSpeed = GAME_CONFIG.pipes.speed * (delta / 16.667);
+      return updatePipesWithCollision(prev, pipeSpeed);
+    });
+
+    animationFrameRef.current = requestAnimationFrame(gameTick);
+  }, [gameState, updateBirdPosition]); // Removed updatePipesWithCollision
+
+  const [hitEffect, setHitEffect] = useState(false);
 
   useEffect(() => {
     if (gameState === "playing") {

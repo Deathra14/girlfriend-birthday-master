@@ -237,9 +237,72 @@ export default function Home() {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => setIsGameOpen(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold py-3 px-6 rounded-full shadow-xl border border-transparent transition transform hover:scale-105 focus:outline-none"
+                className="group relative flex items-center gap-3 
+                           bg-gradient-to-r from-[#4B6CB7] via-[#2A4B8C] to-[#192341]
+                           text-white font-magical py-3 px-6 rounded-full
+                           shadow-[0_0_20px_rgba(75,108,183,0.3)]
+                           hover:shadow-[0_0_30px_rgba(75,108,183,0.5)]
+                           transition-all duration-300 overflow-hidden
+                           border border-white/10 backdrop-blur-sm"
               >
-                Play Flappy Magic
+                {/* Animated background effect */}
+                <motion.div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100
+                             bg-[radial-gradient(circle,_rgba(255,215,0,0.1)_0%,_transparent_70%)]"
+                  animate={{
+                    scale: [1, 1.5],
+                    opacity: [0, 0.5, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                />
+
+                {/* Icon */}
+                <motion.div
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="text-xl"
+                >
+                  🦅
+                </motion.div>
+
+                {/* Text content */}
+                <div className="flex flex-col items-start">
+                  <span className="text-sm text-blue-200/80">Ready for an adventure?</span>
+                  <span className="font-bold relative">
+                    Play Flappy Magic
+                    <motion.div 
+                      className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r 
+                                 from-[#ffd700] to-pink-400 w-0 group-hover:w-full 
+                                 transition-all duration-300"
+                    />
+                  </span>
+                </div>
+
+                {/* Animated arrow */}
+                <motion.span
+                  animate={{ 
+                    x: [0, 4, 0],
+                    opacity: [1, 0.6, 1]
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: Infinity,
+                    ease: "easeInOut" 
+                  }}
+                  className="ml-2"
+                >
+                  →
+                </motion.span>
+
+                {/* New badge */}
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-500 to-purple-500 
+                                px-2 py-1 rounded-full text-xs font-bold shadow-lg
+                                border border-white/20 transform rotate-12">
+                  New!
+                </div>
               </motion.button>
             </div>
           </div>

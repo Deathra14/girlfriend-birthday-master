@@ -16,7 +16,7 @@ export default function FlyingGift() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
           >
             {/* Backdrop with magical particles */}
             <motion.div 
@@ -52,7 +52,7 @@ export default function FlyingGift() {
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-md w-full bg-gradient-to-br from-[#192341] to-[#151C3B] 
+              className="relative w-[95%] sm:w-full max-w-md mx-auto bg-gradient-to-br from-[#192341] to-[#151C3B] 
                        rounded-2xl overflow-hidden border border-pink-400/20 shadow-[0_0_50px_rgba(219,112,147,0.1)]"
             >
               {/* Delivered Status Banner */}
@@ -60,16 +60,16 @@ export default function FlyingGift() {
                 <motion.div
                   initial={{ x: -100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  className="absolute top-4 left-0 bg-gradient-to-r from-green-400/90 to-green-500/90 
-                             py-1 px-4 rounded-r-full shadow-lg z-20"
+                  className="absolute top-2 sm:top-4 left-0 bg-gradient-to-r from-green-400/90 to-green-500/90 
+                             py-1 px-3 sm:px-4 rounded-r-full shadow-lg z-20"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 1, repeat: Infinity }}
-                      className="w-2 h-2 bg-white rounded-full"
+                      className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"
                     />
-                    <span className="text-white text-sm font-magical">Gift Delivered!</span>
+                    <span className="text-white text-xs sm:text-sm font-magical">Gift Delivered!</span>
                   </div>
                 </motion.div>
               )}
@@ -82,13 +82,14 @@ export default function FlyingGift() {
                    }}
               />
 
-              <div className="relative p-6 sm:p-8">
+              <div className="relative p-4 sm:p-6 md:p-8">
                 {/* Close button */}
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setShowGiftReveal(false)}
-                  className="absolute top-4 right-4 text-pink-400/70 hover:text-pink-400 z-10"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 text-pink-400/70 hover:text-pink-400 z-10 
+                           p-2 sm:p-1" // Added padding for better touch target
                 >
                   <FaTimes size={20} />
                 </motion.button>
@@ -97,9 +98,9 @@ export default function FlyingGift() {
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="text-center mb-6"
+                  className="text-center mb-4 sm:mb-6"
                 >
-                  <h3 className="text-3xl font-magical bg-gradient-to-r from-pink-400 to-[#ffd700] 
+                  <h3 className="text-2xl sm:text-3xl font-magical bg-gradient-to-r from-pink-400 to-[#ffd700] 
                                text-transparent bg-clip-text">
                     Your Magical Gift 🎁
                   </h3>
@@ -150,9 +151,9 @@ export default function FlyingGift() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="mt-6 text-center space-y-4"
+                  className="mt-4 sm:mt-6 text-center space-y-3 sm:space-y-4"
                 >
-                  <p className="text-[#e4d5b7] font-magical text-lg leading-relaxed">
+                  <p className="text-[#e4d5b7] font-magical text-base sm:text-lg leading-relaxed">
                     My dearest Charisma,
                   </p>
                   {isDelivered ? (
@@ -162,7 +163,7 @@ export default function FlyingGift() {
                       transition={{ delay: 0.6 }}
                       className="space-y-3"
                     >
-                      <p className="text-pink-300/90 font-light">
+                      <p className="text-pink-300/90 font-light text-sm sm:text-base px-2 sm:px-0">
                         Your special gift has been delivered and unwrapped! 🎁✨
                         I hope it brought as much joy to your heart as you bring to mine.
                         Thank you for making every moment magical. 💝
@@ -177,11 +178,11 @@ export default function FlyingGift() {
                           repeat: Infinity,
                           repeatType: "reverse"
                         }}
-                        className="inline-block bg-gradient-to-r from-pink-400/20 to-purple-400/20 
-                                   rounded-lg p-3 backdrop-blur-sm"
+                        className="mt-4 sm:mt-6 inline-block bg-gradient-to-r from-pink-400/20 to-purple-400/20 
+                                   rounded-lg p-2 sm:p-3 backdrop-blur-sm w-full sm:w-auto"
                       >
-                        <span className="text-pink-300">Gift Status:</span>
-                        <span className="text-green-400 ml-2">Successfully Delivered! 🌟</span>
+                        <span className="text-pink-300 text-sm sm:text-base">Gift Status:</span>
+                        <span className="text-green-400 ml-2 text-sm sm:text-base">Successfully Delivered! 🌟</span>
                       </motion.div>
                     </motion.div>
                   ) : (
@@ -230,7 +231,7 @@ export default function FlyingGift() {
               )}
 
               {/* Bottom decorative border */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 
                            bg-gradient-to-r from-transparent via-pink-400/30 to-transparent" />
             </motion.div>
           </motion.div>

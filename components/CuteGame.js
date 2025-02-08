@@ -53,17 +53,6 @@ const THEME = {
   }
 };
 
-const useDebouncedCallback = (callback, delay) => {
-  const timeoutRef = useRef(null);
-  
-  return useCallback((...args) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => callback(...args), delay);
-  }, [callback, delay]);
-};
-
 export default function CuteGame() {
   const [gameState, setGameState] = useState("start");
 
@@ -80,24 +69,6 @@ export default function CuteGame() {
 
   const birdYRef = useRef(birdY);
   const birdVelocityRef = useRef(birdVelocity);
-
-  // Add sound effects
-  const scoreSound = useRef(
-    typeof Audio !== "undefined" 
-      ? new Audio("/audio/score.mp3") 
-      : null
-  );
-
-  // Add sound play function
-  const playScoreSound = useCallback(() => {
-    if (scoreSound.current) {
-      scoreSound.current.currentTime = 0;
-      scoreSound.current.volume = 0.3;
-      scoreSound.current.play().catch(error => {
-        console.log("Audio play failed:", error);
-      });
-    }
-  }, []);
 
   const updateBirdPosition = useCallback((gravity) => {
     if (gameState !== "playing") return;
@@ -168,7 +139,7 @@ export default function CuteGame() {
     });
 
     animationFrameRef.current = requestAnimationFrame(gameTick);
-  }, [gameState, updateBirdPosition]);
+  }, [gameState, updateBirdPosition, updatePipesWithCollision]); // Added updatePipesWithCollision
 
   const [hitEffect, setHitEffect] = useState(false);
 
@@ -195,7 +166,7 @@ export default function CuteGame() {
       // Score update with visual feedback
       if (!pipe.scored && newX + PIPE_WIDTH < BIRD_X) {
         setScore(s => s + 1);
-        playScoreSound(); // Now properly defined
+        // Removed playScoreSound() call because no score audio needed
       }
       
       return { ...pipe, x: newX, scored: newX + PIPE_WIDTH < BIRD_X };
@@ -212,7 +183,7 @@ export default function CuteGame() {
     }
 
     return newPipes;
-  }, [playScoreSound]);
+  }, [generateNewPipe]); // Added generateNewPipe
 
   useEffect(() => {
     if (gameState === "playing") {
@@ -263,20 +234,6 @@ export default function CuteGame() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const [scoreAnimation] = useState(false);
-
-  const ScoreDisplay = React.memo(({ score }) => (
-    <motion.div
-      className="score-display"
-      animate={scoreAnimation ? {
-        scale: [1, 1.2, 1],
-        y: [0, -10, 0]
-      } : {}}
-    >
-      {score}
-    </motion.div>
-  ));
 
   return (
     <div

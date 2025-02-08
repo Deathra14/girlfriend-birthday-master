@@ -123,19 +123,18 @@ export default function CuteGame() {
     };
   }, []);
 
-  function updatePipesWithCollision(pipes, speed) {
+  const updatePipesWithCollision = useCallback((pipes, speed) => {
     let collision = false;
     const newPipes = pipes.map(pipe => {
       const newX = pipe.x - speed;
       
       // Optimized collision check
-      if (!collision && 
-          newX < BIRD_X + BIRD_SIZE && 
+      if (!collision &&
+          newX < BIRD_X + BIRD_SIZE &&
           newX + PIPE_WIDTH > BIRD_X) {
         const birdY = birdYRef.current;
         const topGap = pipe.gapY - pipe.gapSize / 2;
         const bottomGap = pipe.gapY + pipe.gapSize / 2;
-        
         if (birdY < topGap || birdY + BIRD_SIZE > bottomGap) {
           collision = true;
           setHitEffect(true);
@@ -151,26 +150,23 @@ export default function CuteGame() {
       return { ...pipe, x: newX, scored: newX + PIPE_WIDTH < BIRD_X };
     }).filter(pipe => pipe.x > -PIPE_WIDTH);
   
-    if (newPipes.length === 0 || 
+    if (newPipes.length === 0 ||
         newPipes[newPipes.length - 1].x < GAME_WIDTH - GAME_CONFIG.pipes.spacing) {
       newPipes.push(generateNewPipe());
     }
-  
     if (collision) {
       setGameState("gameover");
     }
-  
     return newPipes;
-  }
+  }, [generateNewPipe]);
 
   const gameTick = useCallback((time) => {
     if (gameState !== "playing") return;
-    
     const delta = time - (lastTimeRef.current || time);
     lastTimeRef.current = time;
 
     // Update bird with delta time
-    const gravity = GAME_CONFIG.physics.gravity * (delta / 16.667); // Normalize for 60fps
+    const gravity = GAME_CONFIG.physics.gravity * (delta / 16.667);
     updateBirdPosition(gravity);
 
     // Update pipes with interpolation
@@ -180,7 +176,7 @@ export default function CuteGame() {
     });
 
     animationFrameRef.current = requestAnimationFrame(gameTick);
-  }, [gameState, updateBirdPosition]); // Removed updatePipesWithCollision
+  }, [gameState, updateBirdPosition, updatePipesWithCollision]);
 
   const [hitEffect, setHitEffect] = useState(false);
 
